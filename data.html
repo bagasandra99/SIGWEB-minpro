@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Menara Telekomunikasi PT. Daya Mitra Telekomunikasi - Gunungkidul</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- DataTables CSS -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap5.min.css">
+    <style>
+        :root {
+            --primary-color: #0d6efd;
+            --secondary-color: #6c757d;
+        }
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .header {
+            background: linear-gradient(135deg, var(--primary-color), #0b5ed7);
+            color: white;
+            padding: 2rem 0;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        .card {
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            margin-bottom: 2rem;
+            border: none;
+        }
+        .card-header {
+            background-color: var(--primary-color);
+            color: white;
+            border-radius: 10px 10px 0 0 !important;
+            padding: 1.25rem;
+        }
+        .data-source {
+            background-color: #e9ecef;
+            border-left: 4px solid var(--primary-color);
+            padding: 1rem;
+            border-radius: 5px;
+            margin-bottom: 1.5rem;
+        }
+        table.dataTable thead th {
+            background-color: var(--primary-color);
+            color: white;
+            border-bottom: none;
+        }
+        .badge-type {
+            background-color: #2d4ed2;
+            color: white;
+        }
+        .map-link {
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+        .map-link:hover {
+            text-decoration: underline;
+        }
+        .footer {
+            background-color: #343a40;
+            color: white;
+            padding: 1.5rem 0;
+            margin-top: 2rem;
+        }
+        @media (max-width: 768px) {
+            .header {
+                padding: 1.5rem 0;
+            }
+            .display-4 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header Section -->
+    <header class="header">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-2 text-center text-md-start">
+                    <i class="fas fa-tower-cell fa-3x mb-3 mb-md-0"></i>
+                </div>
+                <div class="col-md-8 text-center">
+                    <h1 class="display-4 fw-bold mb-2">Data Menara Telekomunikasi</h1>
+                    <p class="lead mb-0">PT. Daya Mitra Telekomunikasi di Kabupaten Gunungkidul</p>
+                </div>
+                <div class="col-md-2 text-center text-md-end">
+                    <i class="fas fa-map-marked-alt fa-3x mb-3 mb-md-0"></i>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <!-- Data Source Information -->
+        <div class="data-source">
+            <div class="row align-items-center">
+                <div class="col-md-10">
+                    <h5 class="fw-bold mb-2"><i class="fas fa-database me-2"></i>Informasi Sumber Data</h5>
+                    <p class="mb-0">Data ini diperoleh dari Dinas Komunikasi dan Informatika (Diskominfo) Kabupaten Gunungkidul. Terakhir diperbarui pada Juni 2023.</p>
+                </div>
+                <div class="col-md-2 text-md-end mt-2 mt-md-0">
+                    <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#sourceModal">
+                        <i class="fas fa-info-circle me-1"></i> Detail
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Statistics Cards -->
+        <div class="row mb-4">
+            <div class="col-md-4 mb-3">
+                <div class="card h-100">
+                    <div class="card-body text-center">
+                        <h6 class="card-subtitle mb-2 text-muted">Total Menara</h6>
+                        <h2 class="card-title text-primary" id="totalTowers">0</h2>
+                        <p class="card-text small">menara telekomunikasi</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-3">
+                <div class="card h-100">
+                    <div class="card-body text-center">
+                        <h6 class="card-subtitle mb-2 text-muted">Tipe Dominan</h6>
+                        <h2 class="card-title text-primary" id="dominantType">N/A</h2>
+                        <p class="card-text small" id="dominantTypeCount"></p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-3">
+                <div class="card h-100">
+                    <div class="card-body text-center">
+                        <h6 class="card-subtitle mb-2 text-muted">Tertinggi</h6>
+                        <h2 class="card-title text-primary" id="tallestTowerHeight">0m</h2>
+                        <p class="card-text small" id="tallestTowerLocation"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Data Table -->
+        <div class="card">
+            <div class="card-header">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="fas fa-table me-2"></i>Daftar Menara Telekomunikasi</h5>
+                    <!-- Removed Excel and Print buttons as requested -->
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table id="towerTable" class="table table-striped table-hover table-bordered w-100">
+                        <thead>
+                            <tr>
+                                <th>No</th>
+                                <th>Desa</th>
+                                <th>Kecamatan</th>
+                                <th>Koordinat</th>
+                                <th>Tinggi</th>
+                                <th>Tipe</th>
+                                <th>Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Data will be loaded here by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Map Visualization section removed as requested -->
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <h5>PT. Daya Mitra Telekomunikasi</h5>
+                    <p class="mb-0">Penyedia infrastruktur telekomunikasi terkemuka di Indonesia.</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <p class="mb-0">
+                        Bagas Andra Kusuma<br>
+                        23/518356/SV/22969
+                    </p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Source Modal -->
+    <div class="modal fade" id="sourceModal" tabindex="-1" aria-labelledby="sourceModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="sourceModalLabel"><i class="fas fa-info-circle me-2"></i>Detail Sumber Data</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Data menara telekomunikasi ini diperoleh dari:</p>
+                    <ul>
+                        <li>Dinas Komunikasi dan Informatika (Diskominfo) Kabupaten Gunungkidul</li>
+                        <li>Periode data: Tahun 2022-2023</li>
+                        <li>Tanggal pengambilan data: 1 Juni 2025</li>
+                        <li>Status data: Publik</li>
+                    </ul>
+                    <p>Untuk informasi lebih lanjut atau permintaan data terbaru, dapat menghubungi Diskominfo Gunungkidul.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript Libraries -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap5.min.js"></script>
+    
+    <script>
+        $(document).ready(function() {
+            // Raw CSV data extracted from the provided image, ensuring all 76 entries are present
+            const csvData = `Desa;Kecamatan;Kabupaten;Latitude;Longitude;Tinggi (m);Tipe;Nama Pemilik Menara
+Jeruk Wudel;Girisubo;Kab. Gunungkidul;-8.14184;110.7718;62;4 KAKI;PT. DAYA MITRA TELEKOMUNIKASI
+Songbanyu;Girisubo;Kab. Gunungkidul;-8.16827;110.8103;72;4 KAKI;PT. DAYA MITRA TELEKOMUNIKASI
+Jepitu;Girisubo;Kab. Gunungkidul;-8.15188;110.7117;62;4 KAKI;PT. DAYA MITRA TELEKOMUNIKASI
+Bejiharjo;Karangmojo;Kab. Gunungkidul;-7.92926;110.646;50;4 KAKI;PT. DAYA MITRA TELEKOMUNIKASI
+Bejiharjo;Karangmojo;Kab. Gunungkidul;-7.92417;110.6413;42;4 KAKI;PT. DAYA MITRA TELEKOMUNIKASI
+Wiladeg;Karangmojo;Kab. Gunungkidul;-7.95765;110.6441;72;4 KAKI;PT. DAYA MITRA TELEKOMUNIKASI
+Gedangrejo;Karangmojo;Kab. Gunungkidul;-7.95242;110.6775;72;4 KAKI;PT. DAYA MITRA TELEKOMUNIKASI
+Jatiayu;Karangmojo;Kab. Gunungkidul;-7.89511;110.6894;72;4 KAKI;PT. DAYA MITRA TELEKOMUNIKASI
+Bejiharjo;Karangmojo;Kab. Gunungkidul;-7.93933;110.6249;72;4 KAKI;PT. DAYA MITRA TELEKOMUNIKASI
+Nglipar;Nglipar;Kab. Gunungkidul;-7.87982;110.6213;72;4 KAKI;PT. DAYA MITRA TELEKOMUNIKASI
+Natah;Nglipar;Kab. Gunungkidul;-7.84891;110.6616;72;4 KAKI;PT. DAYA MITRA TELEKOMUNIKASI
+Nglipar;Nglipar;Kab. Gunungkidul;-7.87986;110.6207;70;4 KAKI;PT. DAYA MITRA TELEKOMUNIKASI
+Grogol;Paliyan;Kab. Gunungkidul;-7.98191;110.5388;72;4 KAKI;PT. DAYA MITRA TELEKOMUNIKASI
+Giring;Paliyan;Kab. Gunungkidul;-8.06975;110.5507;72;4 KAKI;PT. DAYA MITRA TELEKOMUNIKASI
+Karangasem;Paliyan;Kab. Gunungkidul;-8.04575;110.5197;72;4 KAKI;PT. DAYA MITRA TELEKOMUNIKASI
+Karangduwet;Paliyan;Kab. Gunungkidul;-8.0006;110.5122;72;4 KAKI;PT. DAYA MITRA TELEKOMUNIKASI
+Giriharjo;Panggang;Kab. Gunungkidul;-8.01416;110.4208;72;4 KAKI;PT. DAYA MITRA TELEKOMUNIKASI
+Giriharjo;Panggang;Kab. Gunungkidul;-8.03658;110.4682;72;4 KAKI;PT. DAYA MITRA TELEKOMUNIKASI
+Giriharjo;Panggang;Kab. Gunungkidul;-8.014;110.4209;72;4 KAKI;PT. DAYA MITRA TELEKOMUNIKASI
+Girikarto;Panggang;Kab. Gunungkidul;-8.07102;110.4545;72;4 KAKI;PT. DAYA MITRA TELEKOMUNIKASI
+Patuk;Patuk;Kab. Gunungkidul;-7.84211;110.4861;35;4 KAKI;PT. DAYA MITRA TELEKOMUNIKASI
+Nglanggeran;Patuk;Kab. Gunungkidul;-7.864;110.5093;72;4 KAKI;PT. DAYA MITRA TELEKOMUNIKASI
+Ngoro-Oro;Patuk;Kab. Gunungkidul;-7.83669;110.5208;82;4 KAKI;PT. DAYA MITRA TELEKOMUNIKASI
+Bunder;Patuk;Kab. Gunungkidul;-7.87797;110.5416;72;4 KAKI;PT. DAYA MITRA TELEKOMUNIKASI
+Bedoyo;Ponjong;Kab. Gunungkidul;-8.021;110.7405;72;4 KAKI;PT. DAYA MITRA TELEKOMUNIKASI
+Genjahan;Ponjong;Kab. Gunungkidul;-7.97192;110.7131;72;4 KAKI;PT. DAYA MITRA TELEKOMUNIKASI
+Sidorejo;Ponjong;Kab. Gunungkidul;-7.98466;110.694;62;6 KAKI;PT. DAYA MITRA TELEKOMUNIKASI
+Tambakromo;Ponjong;Kab. Gunungkidul;-7.94211;110.7701;72;7 KAKI;PT. DAYA MITRA TELEKOMUNIKASI
+Giritirto;Purwosari;Kab. Gunungkidul;-7.99497;110.3737;72;4 KAKI;PT. DAYA MITRA TELEKOMUNIKASI
+Girijati;Purwosari;Kab. Gunungkidul;-8.01772;110.335;72;4 KAKI;PT. DAYA MITRA TELEKOMUNIKASI
+Giricahyo;Purwosari;Kab. Gunungkidul;-8.02549;110.3685;72;4 KAKI;PT. DAYA MITRA TELEKOMUNIKASI
+Candirejo;Semanu;Kab. Gunungkidul;-8.07071;110.6677;72;4 KAKI;PT. DAYA MITRA TELEKOMUNIKASI
+Dadapayu;Semanu;Kab. Gunungkidul;-8.05831;110.7063;82;4 KAKI;PT. DAYA MITRA TELEKOMUNIKASI
+Ngeposari;Semanu;Kab. Gunungkidul;-8.0138;110.6755;72;4 KAKI;PT. DAYA MITRA TELEKOMUNIKASI
+Semanu;Semanu;Kab. Gunungkidul;-7.99875;110.6527;72;4 KAKI;PT. DAYA MITRA TELEKOMUNIKASI
+Ngoposari;Semanu;Kab. Gunungkidul;-7.97571;110.6673;72;SST;PT. DAYA MITRA TELEKOMUNIKASI
+Kalitekuk;Semin;Kab. Gunungkidul;-7.85232;110.7032;42;4 KAKI;PT. DAYA MITRA TELEKOMUNIKASI
+Semin;Semin;Kab. Gunungkidul;-7.85819;110.7701;72;4 KAKI;PT. DAYA MITRA TELEKOMUNIKASI
+Semin;Semin;Kab. Gunungkidul;-7.86485;110.7345;72;4 KAKI;PT. DAYA MITRA TELEKOMUNIKASI
+Kemiri;Tanjungsari;Kab. Gunungkidul;-8.06462;110.5771;72;4 KAKI;PT. DAYA MITRA TELEKOMUNIKASI
+Hargosari;Tanjungsari;Kab. Gunungkidul;-8.05836;110.6165;72;4 KAKI;PT. DAYA MITRA TELEKOMUNIKASI
+Kemadang;Tanjungsari;Kab. Gunungkidul;-8.10137;110.5609;72;4 KAKI;PT. DAYA MITRA TELEKOMUNIKASI
+Karangrejek;Wonosari;Kab. Gunungkidul;-7.99361;110.5936;42;4 KAKI;PT. DAYA MITRA TELEKOMUNIKASI
+Baleharjo;Wonosari;Kab. Gunungkidul;-7.97502;110.6174;32;4 KAKI;PT. DAYA MITRA TELEKOMUNIKASI
+Kepek;Wonosari;Kab. Gunungkidul;-7.96972;110.5968;55;4 KAKI;PT. DAYA MITRA TELEKOMUNIKASI
+Kepek;Wonosari;Kab. Gunungkidul;-7.96883;110.5919;30;4 KAKI;PT. DAYA MITRA TELEKOMUNIKASI
+Karangrejek;Wonosari;Kab. Gunungkidul;-7.98224;110.5969;42;4 KAKI;PT. DAYA MITRA TELEKOMUNIKASI
+Wonosari;Wonosari;Kab. Gunungkidul;-7.96694;110.6047;72;4 KAKI;PT. DAYA MITRA TELEKOMUNIKASI
+Mulo;Wonosari;Kab. Gunungkidul;-8.01775;110.5869;72;4 KAKI;PT. DAYA MITRA TELEKOMUNIKASI
+Duwet;Wonosari;Kab. Gunungkidul;-7.99419;110.5926;42;4 KAKI;PT. DAYA MITRA TELEKOMUNIKASI
+Baleharjo;Wonosari;Kab. Gunungkidul;-7.9832;110.6195;72;4 KAKI;PT. DAYA MITRA TELEKOMUNIKASI
+Straman;Wonosari;Kab. Gunungkidul;-7.97289;110.5853;72;4 KAKI;PT. DAYA MITRA TELEKOMUNIKASI
+Karangtengah;Wonosari;Kab. Gunungkidul;-7.92158;110.6036;42;4 KAKI;PT. DAYA MITRA TELEKOMUNIKASI
+Baleharjo;Wonosari;Kab. Gunungkidul;-7.978;110.6073;51;SST;PT. DAYA MITRA TELEKOMUNIKASI
+Wareng;Wonosari;Kab. Gunungkidul;-7.98816;110.5768;52;SST;PT. DAYA MITRA TELEKOMUNIKASI
+Wonosari;Wonosari;Kab. Gunungkidul;-7.96708;110.6029;43;SST;PT. DAYA MITRA TELEKOMUNIKASI
+Piyaman;Wonosari;Kab. Gunungkidul;-7.95058;110.6061;62;SST;PT. DAYA MITRA TELEKOMUNIKASI
+Baleharjo;Wonosari;Kab. Gunungkidul;-7.97398;110.6064;42;4 KAKI;PT. DAYA MITRA TELEKOMUNIKASI
+Kepek;Wonosari;Kab. Gunungkidul;-7.95402;110.5912;42;4 KAKI;PT. DAYA MITRA TELEKOMUNIKASI
+Piyaman;Wonosari;Kab. Gunungkidul;-7.94158;110.5917;42;4 KAKI;PT. DAYA MITRA TELEKOMUNIKASI
+Playen;Playen;Kab. Gunungkidul;-7.95036;110.5671;42;4 KAKI;PT. DAYA MITRA TELEKOMUNIKASI
+Banyusoco;Playen;Kab. Gunungkidul;-7.98447;110.4642;72;4 KAKI;PT. DAYA MITRA TELEKOMUNIKASI
+Bleberan;Playen;Kab. Gunungkidul;-7.95738;110.5191;72;4 KAKI;PT. DAYA MITRA TELEKOMUNIKASI
+Getas;Playen;Kab. Gunungkidul;-7.92611;110.5022;62;4 KAKI;PT. DAYA MITRA TELEKOMUNIKASI
+Logandeng;Playen;Kab. Gunungkidul;-7.95212;110.5864;72;4 KAKI;PT. DAYA MITRA TELEKOMUNIKASI
+Logandeng;Playen;Kab. Gunungkidul;-7.94685;110.5767;42;4 KAKI;PT. DAYA MITRA TELEKOMUNIKASI
+Ngawu;Playen;Kab. Gunungkidul;-7.94506;110.5505;42;4 KAKI;PT. DAYA MITRA TELEKOMUNIKASI
+Tegalrejo;Gedangsari;Kab. Gunungkidul;-7.81219;110.6175;42;4 KAKI;PT. DAYA MITRA TELEKOMUNIKASI
+Ngalang;Gedangsari;Kab. Gunungkidul;-7.88305;110.5757;72;4 KAKI;PT. DAYA MITRA TELEKOMUNIKASI
+Serut;Gedangsari;Kab. Gunungkidul;-7.79517;110.5643;72;5 KAKI;PT. DAYA MITRA TELEKOMUNIKASI
+Sambirejo;Ngawen;Kab. Gunungkidul;-7.8166;110.7215;72;4 KAKI;PT. DAYA MITRA TELEKOMUNIKASI
+Sidoharjo;Tepus;Kab. Gunungkidul;-8.08905;110.6276;72;4 KAKI;PT. DAYA MITRA TELEKOMUNIKASI
+Semugih;Rongkop;Kab. Gunungkidul;-8.05063;110.7547;72;4 KAKI;PT. DAYA MITRA TELEKOMUNIKASI
+Semugih;Rongkop;Kab. Gunungkidul;-8.08333;110.7632;92;4 KAKI;PT. DAYA MITRA TELEKOMUNIKASI
+Sambirejo;Ngawen;Kab. Gunungkidul;-7.81646;110.7207;32;4 KAKI;PT. DAYA MITRA TELEKOMUNIKASI
+Tepus;Tepus;Kab. Gunungkidul;-8.12647;110.6416;72;4 KAKI;PT. DAYA MITRA TELEKOMUNIKASI`;
+
+            // Function to parse CSV data
+            function parseCSV(csvString) {
+                const lines = csvString.trim().split('\n');
+                const headers = lines[0].split(';');
+                const data = [];
+
+                for (let i = 1; i < lines.length; i++) {
+                    const values = lines[i].split(';');
+                    let row = {};
+                    headers.forEach((header, index) => {
+                        row[header.trim()] = values[index] ? values[index].trim() : '';
+                    });
+                    data.push(row);
+                }
+                return data;
+            }
+
+            const parsedData = parseCSV(csvData);
+            let towerTable; // Declare towerTable in a scope accessible to updateData
+
+            // Function to update statistics cards
+            function updateStatistics(data) {
+                const totalTowers = data.length;
+                let tallestHeight = 0;
+                let tallestLocation = 'N/A';
+                let typeCounts = {};
+
+                data.forEach(row => {
+                    // Update tallest tower
+                    const currentHeight = parseInt(row['Tinggi (m)']);
+                    if (!isNaN(currentHeight) && currentHeight > tallestHeight) {
+                        tallestHeight = currentHeight;
+                        tallestLocation = `${row['Desa']}, ${row['Kecamatan']}`;
+                    }
+
+                    // Count tower types
+                    const type = row['Tipe'];
+                    if (type) {
+                        typeCounts[type] = (typeCounts[type] || 0) + 1;
+                    }
+                });
+
+                // Find dominant type
+                let dominantType = 'N/A';
+                let dominantTypeCount = 0;
+                for (const type in typeCounts) {
+                    if (typeCounts[type] > dominantTypeCount) {
+                        dominantTypeCount = typeCounts[type];
+                        dominantType = type;
+                    }
+                }
+
+                $('#totalTowers').text(totalTowers);
+                $('#tallestTowerHeight').text(`${tallestHeight}m`);
+                $('#tallestTowerLocation').text(tallestLocation);
+                $('#dominantType').text(dominantType);
+                $('#dominantTypeCount').text(`${dominantTypeCount} dari ${totalTowers} menara`);
+            }
+
+            // Populate table with data
+            const tableData = parsedData.map((row, index) => {
+                const latitude = row['Latitude'];
+                const longitude = row['Longitude'];
+                const coordinates = `${latitude}, ${longitude}`;
+                const googleMapsLink = `https://www.google.com/maps?q=${latitude},${longitude}`;
+
+                return [
+                    index + 1,
+                    row['Desa'],
+                    row['Kecamatan'],
+                    coordinates,
+                    `${row['Tinggi (m)']} m`,
+                    `<span class="badge badge-type">${row['Tipe']}</span>`,
+                    `<a href="${googleMapsLink}" target="_blank" class="map-link"><i class="fas fa-map-marker-alt"></i> Peta</a>`
+                ];
+            });
+
+            // Initialize DataTable
+            towerTable = $('#towerTable').DataTable({
+                data: tableData, // Set data directly
+                language: {
+                    url: '//cdn.datatables.net/plug-ins/1.13.4/i18n/id.json'
+                },
+                responsive: true,
+                dom: '<"top"f>rt<"bottom"lip><"clear">',
+                pageLength: 10,
+                // Define columns explicitly if needed, but DataTables handles it well with direct data
+                columns: [
+                    { title: "No" },
+                    { title: "Desa" },
+                    { title: "Kecamatan" },
+                    { title: "Koordinat" },
+                    { title: "Tinggi" },
+                    { title: "Tipe" },
+                    { title: "Aksi" }
+                ]
+            });
+
+            // Update statistics on page load
+            updateStatistics(parsedData);
+        });
+    </script>
+</body>
+</html>
